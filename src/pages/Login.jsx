@@ -1,4 +1,3 @@
-// src/pages/Login.jsx
 import React, { useEffect, useState } from 'react';
 import todosAPI from '../features/todos/todosAPI';
 import { useNavigate } from 'react-router-dom';

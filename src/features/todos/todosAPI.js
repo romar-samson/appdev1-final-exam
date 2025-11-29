@@ -1,28 +1,18 @@
-export const getTodosAPI = function () {
-    return fetch(`https://jsonplaceholder.typicode.com/todos?_limit=10`)
-    .then(res => res.json())
-}
-export const addTodoAPI = function (todo) {
-    return fetch(`https://jsonplaceholder.typicode.com/todos`, {
-        method: "POST",
-        body: JSON.stringify(todo),
-        headers: { "Content-Type": "application/json" }
-    })
-    .then(res => res.json())
-}
+import axios from 'axios';
 
-export const updateTodoAPI = function(todo) {
-    return fetch(`https://jsonplaceholder.typicode.com/todos/${todo.id}`, {
-        method: "PUT",
-        body: JSON.stringify(todo),
-        headers: { "Content-Type": "application/json" }
-    })
-    .then(res => res.json())
-}
+const API_BASE = import.meta.env.VITE_APP_API_URL;
 
-export const deleteTodoAPI = function(id) {
-    return fetch(`https://jsonplaceholder.typicode.com/todos/${id}`, {
-        method: "DELETE"
-    })
-    .then(() => id)
-}
+const api = axios.create({
+  baseURL: API_BASE,
+  headers: { 'Content-Type': 'application/json' },
+});
+
+export default {
+  fetchTodos: (params) => api.get('/todos', { params }),
+  fetchTodoById: (id) => api.get(`/todos/${id}`),
+  createTodo: (data) => api.post('/todos', data),
+  updateTodo: (id, data) => api.put(`/todos/${id}`, data),
+  patchTodo: (id, data) => api.patch(`/todos/${id}`, data),
+  deleteTodo: (id) => api.delete(`/todos/${id}`),
+  fetchUsers: (limit = 3) => api.get('/users', { params: { _limit: limit } }),
+};
