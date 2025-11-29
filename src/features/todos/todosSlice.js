@@ -1,42 +1,68 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
-import { getTodosAPI, addTodoAPI, updateTodoAPI, deleteTodoAPI } from "./todosAPI.js"
+// src/features/todos/todosSlice.js
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import todosAPI from './todosAPI';
 
-export const fetchTodos = createAsyncThunk("todos/fetchTodos", async () => {
-    return await getTodosAPI()
-})
-export const addTodo = createAsyncThunk("todos/addTodo", async (title) => {
-  const newTodo = { userId: 1, title, completed: false };
-  return await addTodoAPI(newTodo);
+// thunks
+export const fetchTodos = createAsyncThunk('todos/fetchTodos', async () => {
+  const res = await todosAPI.fetchTodos({ _limit: 20 });
+  return res.data;
 });
 
-export const updateTodo = createAsyncThunk("todos/updateTodo", async (todo) => {
-  return await updateTodoAPI(todo);
+export const addTodo = createAsyncThunk('todos/addTodo', async (todo) => {
+  const res = await todosAPI.createTodo(todo);
+  return res.data;
 });
 
-export const deleteTodo = createAsyncThunk("todos/deleteTodo", async (id) => {
-  return await deleteTodoAPI(id);
+export const updateTodo = createAsyncThunk('todos/updateTodo', async ({ id, changes }) => {
+  const res = await todosAPI.putTodo
+    ? await todosAPI.putTodo(id, changes)
+    : await todosAPI.updateTodo(id, changes);
+  return res.data;
 });
+
+export const deleteTodo = createAsyncThunk('todos/deleteTodo', async (id) => {
+  await todosAPI.deleteTodo(id);
+  return id;
+});
+
 const todosSlice = createSlice({
-    name: "todos",
-    initialState: { items: [] },
-    reducers: {},
-    extraReducers: builder => {
-        builder
-        .addCase(fetchTodos.fulfilled, (state, action) => {
-            state.items = action.payload
-        })
-        .addCase(addTodo.fulfilled, (state, action) => {
-            state.items.unshift(action.payload)
-        })
-        .addCase(updateTodo.fulfilled, (state, action) => {
-            const updated = action.payload;
-            const index = state.items.findIndex((item) => item.id === updated.id);
-            if (index !== -1) state.items[index] = updated;
-        })
-        .addCase(deleteTodo.fulfilled, (state, action) => {
-            state.items = state.items.filter((item) => item.id !== action.payload);
-        })
-    }
-})
+  name: 'todos',
+  initialState: {
+    items: [],
+    status: 'idle', // idle | loading | succeeded | failed
+    error: null,
+  },
+  reducers: {
+    // local optimistic updates if needed
+  },
+  extraReducers: (builder) => {
+    builder
+      // fetchTodos
+      .addCase(fetchTodos.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(fetchTodos.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.items = action.payload;
+      })
+      .addCase(fetchTodos.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.error.message;
+      })
+      // addTodo
+      .addCase(addTodo.fulfilled, (state, action) => {
+        state.items.unshift(action.payload);
+      })
+      // updateTodo
+      .addCase(updateTodo.fulfilled, (state, action) => {
+        const idx = state.items.findIndex((t) => t.id === action.payload.id);
+        if (idx !== -1) state.items[idx] = action.payload;
+      })
+      // deleteTodo
+      .addCase(deleteTodo.fulfilled, (state, action) => {
+        state.items = state.items.filter((t) => t.id !== action.payload);
+      });
+  },
+});
 
-export default todosSlice.reducer
+export default todosSlice.reducer;
