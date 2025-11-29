@@ -1,10 +1,16 @@
-function Home () {
-  return (
-    <div>
-      <h1>Welcome to the Todo App</h1>
-      <a href="/login">Go to Login</a>
-    </div>
-  )
-}
+// src/pages/Home.jsx
+import React from 'react';
+import { Link } from 'react-router-dom';
+import Header from '../components/Header';
 
-export default Home
+export default function Home() {
+  return (
+    <>
+      <Header />
+      <div style={{ padding: 20 }}>
+        <h1>Welcome to Just do it — React version</h1>
+        <p>Go to <Link to="/login">Login</Link> to continue.</p>
+      </div>
+    </>
+  );
+}

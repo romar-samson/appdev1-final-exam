@@ -1,25 +1,19 @@
-import { useDispatch } from "react-redux"
-import { updateTodo, deleteTodo } from "../features/todos/todosSlice"
+// src/components/TodoItem.jsx
+import React from 'react';
+import { useTheme } from '../ThemeProvider';
 
-function TodoItem ({ todo }) {
-  const dispatch = useDispatch()
-
-  const toggleComplete = () => {
-    dispatch(updateTodo({ ...todo, completed: !todo.completed }))
-  }
-
-  const handleDelete = () => {
-    dispatch(deleteTodo(todo.id));
-  }
-return (
-    <li>
-      <input type="checkbox" checked={todo.completed} onChange={toggleComplete} />
-      <span style={{ textDecoration: todo.completed ? "line-through" : "none" }}>
-        {todo.title}
-      </span>
-      <button onClick={handleDelete}>Delete</button>
+export default function TodoItem({ todo, onToggle, onDelete }) {
+  const { theme } = useTheme();
+  const todoClass = `todo ${theme}-todo` + (todo.completed ? ' completed' : '');
+  return (
+    <li className={todoClass} style={{ display: 'flex', alignItems: 'center' }}>
+      <div className="todo-item" style={{ flex: 1 }}>{todo.title} <small style={{ color: '#666' }}>#{todo.id}</small></div>
+      <button className={`check-btn ${theme}-button`} onClick={() => onToggle(todo)} aria-label="toggle">
+        <i className="fas fa-check"></i>
+      </button>
+      <button className={`delete-btn ${theme}-button`} onClick={() => onDelete(todo.id)} aria-label="delete">
+        <i className="fas fa-trash"></i>
+      </button>
     </li>
-  )
+  );
 }
-
-export default TodoItem

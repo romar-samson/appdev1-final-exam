@@ -1,3 +1,4 @@
+// src/pages/Login.jsx
 import React, { useEffect, useState } from 'react';
 import todosAPI from '../features/todos/todosAPI';
 import { useNavigate } from 'react-router-dom';
@@ -27,25 +28,24 @@ export default function Login() {
       setError('Select a user');
       return;
     }
-
     navigate('/todos', { replace: true });
   };
 
   return (
     <div>
       <h2>Login</h2>
-      {error && <p style={{color:'red'}}>{error}</p>}
+      {error && <p style={{ color: 'red' }}>{error}</p>}
       <form onSubmit={handleSubmit}>
         <div>
           <label>User:</label>
-          <select value={selectedUserId} onChange={(e)=>setSelectedUserId(e.target.value)}>
+          <select value={selectedUserId} onChange={(e) => setSelectedUserId(e.target.value)}>
             <option value="">-- Select user --</option>
             {users.map(u => <option key={u.id} value={u.id}>{u.name} ({u.email})</option>)}
           </select>
         </div>
         <div>
           <label>Password:</label>
-          <input type="password" value={password} onChange={(e)=>setPassword(e.target.value)} placeholder="Enter password"/>
+          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Enter password" />
         </div>
         <button type="submit">Login</button>
       </form>
